@@ -29,7 +29,7 @@
     "tailwind-merge": "^2.2.0",
     "three": "^0.160.0",
     "viem": "^2.7.0",
-    "wagmi": "^2.5.0",
+    "wagmi": "^2.19.2",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
