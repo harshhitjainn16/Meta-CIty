@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, TrendingUp, Users } from 'lucide-react';
-import { BUILDING_TYPES } from '@/lib/contracts';
+import { BUILDING_TYPES } from '@/constants';
 
 interface Proposal {
   id: number;
@@ -59,12 +59,12 @@ export default function ProposalsList() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-orbitron font-bold text-gradient">Governance Proposals</h2>
-          <p className="text-gray-400 mt-2">Vote on city development decisions</p>
+          <h2 className="text-3xl font-orbitron font-bold text-white">Governance Proposals</h2>
+          <p className="text-text-muted mt-2">Vote on city development decisions</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="btn-primary"
+          className="bg-black text-white font-orbitron font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all transform hover:scale-105 border-2 border-white"
         >
           + Create Proposal
         </button>
@@ -96,26 +96,29 @@ function ProposalCard({ proposal, index }: { proposal: Proposal; index: number }
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="card-gradient p-6 rounded-xl border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all"
+      className="card-gradient p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all"
     >
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         {/* Left Section */}
         <div className="flex-1">
           <div className="flex items-start gap-4">
             <div 
-              className="text-5xl p-4 rounded-xl border-2"
-              style={{ borderColor: building?.color, backgroundColor: `${building?.color}20` }}
+              className="text-5xl p-4 rounded-xl border-2 bg-white/5"
+              style={{ 
+                borderColor: building?.color + '50',
+                background: `linear-gradient(135deg, ${building?.color}15 0%, ${building?.color}05 100%)`
+              }}
             >
               {building?.icon}
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-orbitron font-bold mb-2">{proposal.title}</h3>
-              <p className="text-gray-400 mb-3">{proposal.description}</p>
+              <h3 className="text-2xl font-orbitron font-bold mb-2 text-white">{proposal.title}</h3>
+              <p className="text-text-secondary mb-3">{proposal.description}</p>
               <div className="flex items-center gap-4 text-sm">
-                <span className="text-gray-500">
-                  Proposed by: <span className="text-cyber-blue font-mono">{proposal.proposer}</span>
+                <span className="text-text-muted">
+                  Proposed by: <span className="text-white font-mono">{proposal.proposer}</span>
                 </span>
-                <span className="flex items-center gap-1 text-gray-500">
+                <span className="flex items-center gap-1 text-text-muted">
                   <Clock className="w-4 h-4" />
                   {timeLeft} days left
                 </span>
@@ -126,17 +129,17 @@ function ProposalCard({ proposal, index }: { proposal: Proposal; index: number }
           {/* Voting Progress */}
           <div className="mt-4">
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-text-secondary">
                 <TrendingUp className="w-4 h-4 inline mr-1" />
                 For: {proposal.votesFor.toLocaleString()} ({forPercentage.toFixed(1)}%)
               </span>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-text-secondary">
                 Against: {proposal.votesAgainst.toLocaleString()} ({(100 - forPercentage).toFixed(1)}%)
               </span>
             </div>
-            <div className="w-full bg-dark-card rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-dark-gray rounded-full h-3 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-neon-green to-cyber-blue h-full transition-all"
+                className="bg-gradient-success h-full transition-all"
                 style={{ width: `${forPercentage}%` }}
               />
             </div>
@@ -145,11 +148,11 @@ function ProposalCard({ proposal, index }: { proposal: Proposal; index: number }
 
         {/* Right Section - Vote Buttons */}
         <div className="flex lg:flex-col gap-3">
-          <button className="btn-primary bg-gradient-to-r from-neon-green to-cyber-blue flex-1 lg:flex-none">
-            ✓ Vote For
+          <button className="bg-black text-white font-orbitron font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all transform hover:scale-105 border-2 border-white flex-1 lg:flex-none">
+            <span className="text-accent-green">✓</span> Vote For
           </button>
-          <button className="btn-secondary flex-1 lg:flex-none">
-            ✗ Vote Against
+          <button className="bg-black text-white font-orbitron font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all transform hover:scale-105 border-2 border-white flex-1 lg:flex-none">
+            <span className="text-accent-pink">✗</span> Vote Against
           </button>
         </div>
       </div>
@@ -162,41 +165,41 @@ function CreateProposalModal({ onClose }: { onClose: () => void }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="card-gradient p-8 rounded-2xl border-2 border-cyber-blue max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="card-gradient p-8 rounded-2xl border-2 border-white/30 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-3xl font-orbitron font-bold text-gradient mb-6">Create New Proposal</h2>
+        <h2 className="text-3xl font-orbitron font-bold text-white mb-6">Create New Proposal</h2>
         
         <form className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Proposal Title</label>
+            <label className="block text-sm font-medium mb-2 text-text-secondary">Proposal Title</label>
             <input
               type="text"
-              className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue"
+              className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50 placeholder:text-text-muted"
               placeholder="Build Solar Farm in District 3"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2 text-text-secondary">Description</label>
             <textarea
-              className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue h-32"
+              className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50 h-32 placeholder:text-text-muted"
               placeholder="Describe the benefits and impact of this proposal..."
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Building Type</label>
-              <select className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue">
+              <label className="block text-sm font-medium mb-2 text-text-secondary">Building Type</label>
+              <select className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50">
                 {BUILDING_TYPES.map((building) => (
-                  <option key={building.id} value={building.id}>
+                  <option key={building.id} value={building.id} className="bg-dark-gray">
                     {building.icon} {building.name}
                   </option>
                 ))}
@@ -204,11 +207,11 @@ function CreateProposalModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Funding Required (ETH)</label>
+              <label className="block text-sm font-medium mb-2 text-text-secondary">Funding Required (ETH)</label>
               <input
                 type="number"
                 step="0.01"
-                className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue"
+                className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50 placeholder:text-text-muted"
                 placeholder="0.5"
               />
             </div>
@@ -216,32 +219,32 @@ function CreateProposalModal({ onClose }: { onClose: () => void }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">X Position</label>
+              <label className="block text-sm font-medium mb-2 text-text-secondary">X Position</label>
               <input
                 type="number"
-                className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue"
+                className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50 placeholder:text-text-muted"
                 placeholder="0"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Y Position</label>
+              <label className="block text-sm font-medium mb-2 text-text-secondary">Y Position</label>
               <input
                 type="number"
-                className="w-full bg-dark-card border border-cyber-blue/50 rounded-lg px-4 py-3 focus:outline-none focus:border-cyber-blue"
+                className="w-full bg-dark-gray border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/50 placeholder:text-text-muted"
                 placeholder="0"
               />
             </div>
           </div>
 
           <div className="flex gap-4">
-            <button type="submit" className="btn-primary flex-1">
+            <button type="submit" className="bg-black text-white font-orbitron font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all transform hover:scale-105 border-2 border-white flex-1">
               Create Proposal
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="btn-secondary flex-1"
+              className="bg-black text-white font-orbitron font-bold py-3 px-6 rounded-lg hover:bg-gray-900 transition-all transform hover:scale-105 border-2 border-white flex-1"
             >
               Cancel
             </button>

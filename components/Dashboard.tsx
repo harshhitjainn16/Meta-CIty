@@ -13,14 +13,14 @@ const statsData = [
 ];
 
 const buildingDistribution = [
-  { name: 'Residential', value: 35, color: '#4CAF50' },
-  { name: 'Commercial', value: 25, color: '#2196F3' },
-  { name: 'Industrial', value: 15, color: '#FF9800' },
-  { name: 'Green Spaces', value: 20, color: '#8BC34A' },
-  { name: 'Public Services', value: 5, color: '#9C27B0' },
+  { name: 'Residential', value: 35, color: '#00d4ff' },
+  { name: 'Commercial', value: 25, color: '#b537ff' },
+  { name: 'Industrial', value: 15, color: '#ff006e' },
+  { name: 'Green Spaces', value: 20, color: '#39ff14' },
+  { name: 'Public Services', value: 5, color: '#ff6b35' },
 ];
 
-const COLORS = ['#4CAF50', '#2196F3', '#FF9800', '#8BC34A', '#9C27B0'];
+const COLORS = ['#00d4ff', '#b537ff', '#ff006e', '#39ff14', '#ff6b35'];
 
 export default function Dashboard() {
   return (
@@ -32,28 +32,28 @@ export default function Dashboard() {
           title="Total Buildings"
           value="247"
           change="+12%"
-          color="cyber-blue"
+          accentColor="text-accent-cyan"
         />
         <StatCard
           icon={<Users className="w-8 h-8" />}
           title="Active Members"
           value="1,834"
           change="+23%"
-          color="cyber-purple"
+          accentColor="text-accent-purple"
         />
         <StatCard
           icon={<TrendingUp className="w-8 h-8" />}
           title="Treasury Value"
           value="$2.5M"
           change="+8%"
-          color="neon-green"
+          accentColor="text-accent-green"
         />
         <StatCard
           icon={<Award className="w-8 h-8" />}
           title="Sustainability Score"
           value="87/100"
           change="+5%"
-          color="cyber-pink"
+          accentColor="text-accent-orange"
         />
       </div>
 
@@ -63,19 +63,20 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card-gradient p-6 rounded-xl border border-cyber-blue/30"
+          className="card-gradient p-6 rounded-xl border border-white/10"
         >
-          <h3 className="font-orbitron text-xl mb-4 text-gradient">Weekly Activity</h3>
+          <h3 className="font-orbitron text-xl mb-4 text-white">Weekly Activity</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={statsData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-              <XAxis dataKey="name" stroke="#00d4ff" />
-              <YAxis stroke="#00d4ff" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+              <XAxis dataKey="name" stroke="#ffffff" />
+              <YAxis stroke="#ffffff" />
               <Tooltip 
                 contentStyle={{ 
-                  background: '#151932', 
-                  border: '1px solid #00d4ff',
-                  borderRadius: '8px' 
+                  background: '#0a0a0a', 
+                  border: '1px solid #00d4ff50',
+                  borderRadius: '8px',
+                  color: '#ffffff'
                 }} 
               />
               <Legend />
@@ -90,9 +91,9 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="card-gradient p-6 rounded-xl border border-cyber-blue/30"
+          className="card-gradient p-6 rounded-xl border border-white/10"
         >
-          <h3 className="font-orbitron text-xl mb-4 text-gradient">Building Distribution</h3>
+          <h3 className="font-orbitron text-xl mb-4 text-white">Building Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -102,7 +103,7 @@ export default function Dashboard() {
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={100}
-                fill="#8884d8"
+                fill="#ffffff"
                 dataKey="value"
               >
                 {buildingDistribution.map((entry, index) => (
@@ -111,9 +112,10 @@ export default function Dashboard() {
               </Pie>
               <Tooltip 
                 contentStyle={{ 
-                  background: '#151932', 
-                  border: '1px solid #00d4ff',
-                  borderRadius: '8px' 
+                  background: '#0a0a0a', 
+                  border: '1px solid #ffffff30',
+                  borderRadius: '8px',
+                  color: '#ffffff'
                 }} 
               />
             </PieChart>
@@ -126,9 +128,9 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="card-gradient p-6 rounded-xl border border-cyber-blue/30"
+        className="card-gradient p-6 rounded-xl border border-white/10"
       >
-        <h3 className="font-orbitron text-2xl mb-4 text-gradient">🏆 Top Builders</h3>
+        <h3 className="font-orbitron text-2xl mb-4 text-white">🏆 Top Builders</h3>
         <div className="space-y-3">
           {[
             { rank: 1, address: '0x1234...5678', buildings: 45, rewards: '12,500', sustainability: 92 },
@@ -139,26 +141,26 @@ export default function Dashboard() {
           ].map((builder) => (
             <div 
               key={builder.rank}
-              className="flex items-center justify-between p-4 bg-dark-card/50 rounded-lg border border-cyber-blue/20 hover:border-cyber-blue/50 transition-all"
+              className="flex items-center justify-between p-4 bg-dark-gray/50 rounded-lg border border-white/10 hover:border-white/30 transition-all"
             >
               <div className="flex items-center space-x-4">
                 <div className={`
                   w-10 h-10 rounded-full flex items-center justify-center font-orbitron font-bold
-                  ${builder.rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : ''}
-                  ${builder.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-500' : ''}
-                  ${builder.rank === 3 ? 'bg-gradient-to-br from-amber-600 to-amber-800' : ''}
-                  ${builder.rank > 3 ? 'bg-gradient-cyber' : ''}
+                  ${builder.rank === 1 ? 'bg-gradient-to-br from-accent-yellow to-accent-orange text-pure-black' : ''}
+                  ${builder.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-pure-black' : ''}
+                  ${builder.rank === 3 ? 'bg-gradient-to-br from-accent-orange to-accent-pink text-white' : ''}
+                  ${builder.rank > 3 ? 'bg-dark-gray border border-white/20 text-white' : ''}
                 `}>
                   #{builder.rank}
                 </div>
                 <div>
                   <p className="font-mono text-white">{builder.address}</p>
-                  <p className="text-xs text-gray-400">{builder.buildings} buildings • Sustainability: {builder.sustainability}/100</p>
+                  <p className="text-xs text-text-muted">{builder.buildings} buildings • Sustainability: {builder.sustainability}/100</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-orbitron font-bold text-neon-green">{builder.rewards} METACITY</p>
-                <p className="text-xs text-gray-400">Total Rewards</p>
+                <p className="font-orbitron font-bold text-accent-green">{builder.rewards} METACITY</p>
+                <p className="text-xs text-text-muted">Total Rewards</p>
               </div>
             </div>
           ))}
@@ -168,26 +170,26 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ icon, title, value, change, color }: { 
+function StatCard({ icon, title, value, change, accentColor = "text-white" }: { 
   icon: React.ReactNode; 
   title: string; 
   value: string; 
   change: string;
-  color: string;
+  accentColor?: string;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.05 }}
-      className="card-gradient p-6 rounded-xl border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all"
+      className="card-gradient p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className={`text-${color}`}>{icon}</div>
-        <span className="text-neon-green text-sm font-bold">{change}</span>
+        <div className={accentColor}>{icon}</div>
+        <span className="text-accent-green text-sm font-bold">{change}</span>
       </div>
-      <h3 className="text-gray-400 text-sm mb-2">{title}</h3>
-      <p className={`text-3xl font-orbitron font-bold text-${color}`}>{value}</p>
+      <h3 className="text-text-muted text-sm mb-2 uppercase tracking-wider">{title}</h3>
+      <p className={`text-3xl font-orbitron font-bold ${accentColor}`}>{value}</p>
     </motion.div>
   );
 }
