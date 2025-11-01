@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { Leaf, Coins, TrendingUp, Building2 } from 'lucide-react';
+import { Leaf, Coins, TrendingUp, Building2, MapPin, User, Zap, Award } from 'lucide-react';
 import { BUILDING_TYPES } from '@/constants';
 
 interface BuildingData {
@@ -25,25 +25,35 @@ const mockBuildings: BuildingData[] = [
   { id: 8, type: 7, level: 4, sustainability: 95, owner: '0x8901...2345', rewards: 401, x: 5, y: 5 },
 ];
 
-const GRID_SIZE = 6;
-const CELL_SIZE = 100;
-
 export default function BuildingsGallery() {
-  const [selectedBuilding, setSelectedBuilding] = useState<BuildingData | null>(null);
-  const [hoveredBuilding, setHoveredBuilding] = useState<BuildingData | null>(null);
   const [filterType, setFilterType] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<'level' | 'rewards' | 'sustainability'>('level');
+  const [selectedBuilding, setSelectedBuilding] = useState<BuildingData | null>(null);
 
   const filteredBuildings = filterType === null 
     ? mockBuildings 
     : mockBuildings.filter(b => b.type === filterType);
 
+  const sortedBuildings = [...filteredBuildings].sort((a, b) => {
+    switch (sortBy) {
+      case 'level':
+        return b.level - a.level;
+      case 'rewards':
+        return b.rewards - a.rewards;
+      case 'sustainability':
+        return b.sustainability - a.sustainability;
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-orbitron font-bold text-white">City Map View</h2>
-          <p className="text-text-muted mt-2">Explore your buildings on the city grid</p>
+          <h2 className="text-3xl font-orbitron font-bold text-white">Buildings Collection</h2>
+          <p className="text-text-muted mt-2">Manage and explore all buildings in MetaCity</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="card-gradient px-6 py-3 rounded-lg border border-white/10">
@@ -51,253 +61,6 @@ export default function BuildingsGallery() {
             <span className="font-orbitron font-bold text-white text-xl">{mockBuildings.length}</span>
           </div>
         </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        <motion.button 
-          onClick={() => setFilterType(null)}
-          className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
-            filterType === null 
-              ? 'bg-white text-black border-white font-bold' 
-              : 'bg-black text-white border-white/50 hover:border-white'
-          }`}
-          whileHover={{ 
-            scale: 1.05,
-            borderColor: '#ffffff',
-          }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-        >
-          All Buildings
-        </motion.button>
-        {BUILDING_TYPES.map((type) => (
-          <motion.button
-            key={type.id}
-            onClick={() => setFilterType(type.id)}
-            className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
-              filterType === type.id
-                ? 'bg-white text-black border-white font-bold'
-                : 'bg-black text-white border-white/50 hover:border-white'
-            }`}
-            whileHover={{ 
-              scale: 1.05,
-              borderColor: '#ffffff',
-            }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          >
-            <span className="mr-2">{type.icon}</span> {type.name}
-          </motion.button>
-        ))}
-      </div>
-
-      {/* City Map Grid */}
-      <div className="relative flex items-center justify-center">
-        {/* Map Container */}
-        <div 
-          className="relative bg-gradient-to-br from-near-black via-dark-gray to-near-black rounded-xl overflow-hidden border border-white/10"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`,
-            minHeight: `${GRID_SIZE * CELL_SIZE + 40}px`,
-            padding: '20px',
-            width: 'fit-content',
-            minWidth: `${GRID_SIZE * CELL_SIZE + 40}px`,
-          }}
-        >
-          {/* Grid Lines */}
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ opacity: 0.3 }}
-          >
-            {Array.from({ length: GRID_SIZE + 1 }).map((_, i) => (
-              <g key={i}>
-                <line
-                  x1={20 + i * CELL_SIZE}
-                  y1={20}
-                  x2={20 + i * CELL_SIZE}
-                  y2={20 + GRID_SIZE * CELL_SIZE}
-                  stroke="rgba(0, 212, 255, 0.2)"
-                  strokeWidth="1"
-                />
-                <line
-                  x1={20}
-                  y1={20 + i * CELL_SIZE}
-                  x2={20 + GRID_SIZE * CELL_SIZE}
-                  y2={20 + i * CELL_SIZE}
-                  stroke="rgba(0, 212, 255, 0.2)"
-                  strokeWidth="1"
-                />
-              </g>
-            ))}
-          </svg>
-
-          {/* Buildings on Grid */}
-          {filteredBuildings.map((building, index) => {
-            const buildingType = BUILDING_TYPES[building.type];
-            const isSelected = selectedBuilding?.id === building.id;
-            const isHovered = hoveredBuilding?.id === building.id;
-            
-            return (
-              <CityBuilding
-                key={building.id}
-                building={building}
-                buildingType={buildingType}
-                index={index}
-                isSelected={isSelected}
-                isHovered={isHovered}
-                onSelect={() => setSelectedBuilding(building)}
-                onHover={() => setHoveredBuilding(building)}
-                onLeave={() => setHoveredBuilding(null)}
-              />
-            );
-          })}
-
-          {/* Empty Grid Cells */}
-          {Array.from({ length: GRID_SIZE * GRID_SIZE }).map((_, i) => {
-            const x = (i % GRID_SIZE) + 1;
-            const y = Math.floor(i / GRID_SIZE) + 1;
-            const hasBuilding = filteredBuildings.some(b => b.x === x && b.y === y);
-            
-            if (hasBuilding) return null;
-            
-            return (
-              <motion.div
-                key={`empty-${i}`}
-                className="absolute border border-dashed rounded-lg"
-                style={{
-                  left: `${20 + (x - 1) * CELL_SIZE}px`,
-                  top: `${20 + (y - 1) * CELL_SIZE}px`,
-                  width: `${CELL_SIZE - 8}px`,
-                  height: `${CELL_SIZE - 8}px`,
-                  borderColor: 'rgba(255, 255, 255, 0.05)',
-                }}
-                whileHover={{ 
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  scale: 1.02,
-                }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              />
-            );
-          })}
-        </div>
-
-        {/* Building Details Panel */}
-        <AnimatePresence>
-          {selectedBuilding && (
-            <motion.div
-              initial={{ opacity: 0, x: 20, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 20, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="absolute top-0 right-0 w-80 card-gradient rounded-xl border-2 border-white/30 p-6 z-50 shadow-2xl"
-            >
-              <motion.button
-                onClick={() => setSelectedBuilding(null)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-black border-2 border-white rounded-lg text-white z-10 hover:bg-gray-900"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                ✕
-              </motion.button>
-              
-              {(() => {
-                const buildingType = BUILDING_TYPES[selectedBuilding.type];
-                return (
-                  <>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div 
-                        className="text-5xl p-3 rounded-lg"
-                        style={{
-                          background: `linear-gradient(135deg, ${buildingType.color}30 0%, ${buildingType.color}10 100%)`,
-                        }}
-                      >
-                        {buildingType.icon}
-                      </div>
-                      <div>
-                        <h3 
-                          className="font-orbitron font-bold text-xl"
-                          style={{ color: buildingType.color }}
-                        >
-                          {buildingType.name}
-                        </h3>
-                        <p className="text-xs text-text-muted">Building #{selectedBuilding.id}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-text-muted">Level</span>
-                          <span className="font-bold text-white">{selectedBuilding.level}/10</span>
-                        </div>
-                        <div className="w-full bg-dark-gray border border-white/20 rounded-full h-3 overflow-hidden">
-                          <div
-                            className="h-full bg-white rounded-full transition-all"
-                            style={{ width: `${(selectedBuilding.level / 10) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-text-muted">Sustainability</span>
-                          <span className="font-bold text-white">{selectedBuilding.sustainability}/100</span>
-                        </div>
-                        <div className="w-full bg-dark-gray border border-white/20 rounded-full h-3 overflow-hidden">
-                          <div
-                            className="h-full bg-white rounded-full transition-all"
-                            style={{ width: `${selectedBuilding.sustainability}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="pt-2 border-t border-white/20">
-                        <div className="flex justify-between text-sm mb-3">
-                          <span className="text-text-muted">Rewards Earned</span>
-                          <span className="font-bold text-white">{selectedBuilding.rewards.toLocaleString()} METACITY</span>
-                        </div>
-                        <div className="flex justify-between text-sm mb-3">
-                          <span className="text-text-muted">Location</span>
-                          <span className="font-mono text-xs text-white font-bold">({selectedBuilding.x}, {selectedBuilding.y})</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-text-muted">Owner</span>
-                          <span className="font-mono text-xs text-white">{selectedBuilding.owner}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 pt-2">
-                        <motion.button 
-                          className="flex-1 bg-black text-white py-2 rounded-lg font-orbitron text-sm font-bold border-2 border-white"
-                          whileHover={{ scale: 1.02, backgroundColor: '#1a1a1a' }}
-                          whileTap={{ scale: 0.98 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                        >
-                          Upgrade
-                        </motion.button>
-                        <motion.button 
-                          className="flex-1 bg-black text-white py-2 rounded-lg font-orbitron text-sm font-bold border-2 border-white"
-                          whileHover={{ scale: 1.02, backgroundColor: '#1a1a1a' }}
-                          whileTap={{ scale: 0.98 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                        >
-                          Claim
-                        </motion.button>
-                      </div>
-                    </div>
-                  </>
-                );
-              })()}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Stats Summary */}
@@ -331,158 +94,278 @@ export default function BuildingsGallery() {
           accentColor="text-accent-orange"
         />
       </div>
+
+      {/* Filters and Sort */}
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        {/* Filter Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-2 flex-1">
+          <motion.button 
+            onClick={() => setFilterType(null)}
+            className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
+              filterType === null 
+                ? 'bg-white text-black border-white font-bold' 
+                : 'bg-black text-white border-white/50 hover:border-white'
+            }`}
+            whileHover={{ 
+              scale: 1.05,
+              borderColor: '#ffffff',
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          >
+            All Buildings
+          </motion.button>
+          {BUILDING_TYPES.map((type) => (
+            <motion.button
+              key={type.id}
+              onClick={() => setFilterType(type.id)}
+              className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
+                filterType === type.id
+                  ? 'bg-white text-black border-white font-bold'
+                  : 'bg-black text-white border-white/50 hover:border-white'
+              }`}
+              whileHover={{ 
+                scale: 1.05,
+                borderColor: '#ffffff',
+              }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            >
+              <span className="mr-2">{type.icon}</span> {type.name}
+            </motion.button>
+          ))}
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className="flex items-center gap-2">
+          <span className="text-text-muted text-sm">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'level' | 'rewards' | 'sustainability')}
+            className="bg-black border-2 border-white/50 text-white px-4 py-2 rounded-lg font-space-grotesk focus:border-white focus:outline-none"
+          >
+            <option value="level">Level</option>
+            <option value="rewards">Rewards</option>
+            <option value="sustainability">Sustainability</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Building Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <AnimatePresence mode="popLayout">
+          {sortedBuildings.map((building, index) => (
+            <BuildingCard
+              key={building.id}
+              building={building}
+              index={index}
+              isSelected={selectedBuilding?.id === building.id}
+              onSelect={() => setSelectedBuilding(selectedBuilding?.id === building.id ? null : building)}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Empty State */}
+      {sortedBuildings.length === 0 && (
+        <div className="text-center py-16">
+          <Building2 className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
+          <p className="text-text-muted text-lg">No buildings found matching your filters</p>
+        </div>
+      )}
     </div>
   );
 }
 
-function CityBuilding({
+function BuildingCard({
   building,
-  buildingType,
   index,
   isSelected,
-  isHovered,
   onSelect,
-  onHover,
-  onLeave,
 }: {
   building: BuildingData;
-  buildingType: typeof BUILDING_TYPES[number];
   index: number;
   isSelected: boolean;
-  isHovered: boolean;
   onSelect: () => void;
-  onHover: () => void;
-  onLeave: () => void;
 }) {
-  const size = 40 + (building.level * 8);
-  const baseX = 20 + (building.x - 1) * CELL_SIZE + (CELL_SIZE - size) / 2;
-  const baseY = 20 + (building.y - 1) * CELL_SIZE + (CELL_SIZE - size) / 2;
+  const buildingType = BUILDING_TYPES[building.type];
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
-        x: baseX,
-        y: baseY,
-      }}
-      transition={{ delay: index * 0.1, type: 'spring', stiffness: 200, damping: 20 }}
-      whileHover={{ 
-        scale: 1.12,
-        y: baseY - 8,
-        zIndex: 10,
-      }}
-      whileTap={{ scale: 1.08 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       onClick={onSelect}
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
-      className="absolute cursor-pointer"
+      className={`relative cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
+        isSelected 
+          ? 'border-white shadow-2xl shadow-white/20' 
+          : 'border-white/20 hover:border-white/40'
+      }`}
       style={{
-        width: `${size}px`,
-        height: `${size}px`,
+        background: isSelected
+          ? `linear-gradient(135deg, ${buildingType.color}15 0%, rgba(10, 10, 10, 0.95) 100%)`
+          : 'linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%)',
       }}
     >
       {/* Glow Effect */}
-      <motion.div
-        className="absolute inset-0 rounded-lg blur-md"
-        style={{
-          backgroundColor: buildingType.color,
-          transform: 'scale(1.5)',
-        }}
-        animate={{
-          opacity: isSelected ? 1 : isHovered ? 0.7 : 0.3,
-          scale: isSelected ? 1.6 : isHovered ? 1.55 : 1.5,
-        }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      />
-      
-      {/* Building Container */}
-      <motion.div
-        className="relative w-full h-full rounded-lg flex items-center justify-center backdrop-blur-sm"
-        style={{
-          borderColor: buildingType.color,
-          borderStyle: 'solid',
-        }}
-        animate={{
-          borderWidth: isSelected ? '3px' : '2px',
-          backgroundColor: isSelected ? `${buildingType.color}30` : isHovered ? `${buildingType.color}25` : `${buildingType.color}20`,
-        }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      >
-        {/* Animated Shadow */}
+      {isSelected && (
         <motion.div
-          className="absolute inset-0 rounded-lg"
-          style={{
-            boxShadow: `0 0 0px ${buildingType.color}00`,
-          }}
-          animate={{
-            boxShadow: isSelected 
-              ? `0 0 25px ${buildingType.color}FF`
-              : isHovered 
-              ? `0 0 18px ${buildingType.color}B3`
-              : `0 0 8px ${buildingType.color}4D`,
-          }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          className="absolute inset-0 opacity-30 blur-xl"
+          style={{ backgroundColor: buildingType.color }}
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 2, repeat: Infinity }}
         />
+      )}
 
-        {/* Building Icon */}
-        <motion.div 
-          className="text-3xl relative z-10"
-          animate={{
-            scale: 1 + (building.level - 1) * 0.1 + (isHovered || isSelected ? 0.1 : 0),
-            filter: isSelected 
-              ? `drop-shadow(0 0 12px ${buildingType.color})`
-              : isHovered 
-              ? `drop-shadow(0 0 10px ${buildingType.color})`
-              : `drop-shadow(0 0 4px ${buildingType.color}80)`,
-          }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        >
-          {buildingType.icon}
-        </motion.div>
-
-        {/* Level Badge */}
-        <motion.div 
-          className="absolute -top-2 -right-2 bg-near-black border-2 rounded-full w-6 h-6 flex items-center justify-center text-xs font-orbitron font-bold text-white z-20"
-          style={{ borderColor: buildingType.color }}
-          animate={{
-            scale: isHovered || isSelected ? 1.1 : 1,
-          }}
-          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        >
-          {building.level}
-        </motion.div>
-
-        {/* Sustainability Indicator */}
-        <motion.div 
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-lg z-10"
-          style={{ 
-            backgroundColor: buildingType.color,
-          }}
-          animate={{
-            opacity: building.sustainability / 100,
-            height: isHovered || isSelected ? '3px' : '2px',
-          }}
-          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        />
-      </motion.div>
-
-      {/* Tooltip on Hover */}
-      <AnimatePresence>
-        {isHovered && !isSelected && (
-          <motion.div
-            initial={{ opacity: 0, y: -15, scale: 0.9 }}
-            animate={{ opacity: 1, y: -8, scale: 1 }}
-            exit={{ opacity: 0, y: -15, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 glass-effect px-3 py-2 rounded-lg whitespace-nowrap pointer-events-none z-50"
+      {/* Card Content */}
+      <div className="relative p-6 space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3 flex-1">
+            <div
+              className="text-5xl p-4 rounded-xl flex-shrink-0"
+              style={{
+                background: `linear-gradient(135deg, ${buildingType.color}30 0%, ${buildingType.color}10 100%)`,
+                boxShadow: `0 8px 32px ${buildingType.color}30`,
+              }}
+            >
+              {buildingType.icon}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3
+                className="font-orbitron font-bold text-lg truncate"
+                style={{ color: buildingType.color }}
+              >
+                {buildingType.name}
+              </h3>
+              <p className="text-xs text-text-muted">Building #{building.id}</p>
+            </div>
+          </div>
+          {/* Level Badge */}
+          <div
+            className="flex items-center justify-center w-12 h-12 rounded-full border-2 font-orbitron font-bold text-white flex-shrink-0"
+            style={{
+              borderColor: buildingType.color,
+              backgroundColor: `${buildingType.color}20`,
+            }}
           >
-            <div className="font-orbitron font-bold text-sm text-white">{buildingType.name}</div>
-            <div className="text-xs text-text-muted">Level {building.level} • {building.sustainability}%</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <span className="text-xl">{building.level}</span>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Sustainability */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Leaf className="w-4 h-4 text-accent-green" />
+              <span className="text-xs text-text-muted font-space-grotesk">Sustainability</span>
+            </div>
+            <div className="relative">
+              <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: buildingType.color }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${building.sustainability}%` }}
+                  transition={{ delay: 0.3 + index * 0.05, duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+              <span className="text-xs font-bold text-white absolute right-0 top-0">
+                {building.sustainability}%
+              </span>
+            </div>
+          </div>
+
+          {/* Rewards */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Coins className="w-4 h-4 text-accent-purple" />
+              <span className="text-xs text-text-muted font-space-grotesk">Rewards</span>
+            </div>
+            <p className="text-sm font-orbitron font-bold text-white">
+              {building.rewards.toLocaleString()}
+            </p>
+            <p className="text-xs text-text-muted">METACITY</p>
+          </div>
+        </div>
+
+        {/* Level Progress */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-accent-cyan" />
+              <span className="text-text-muted font-space-grotesk">Level Progress</span>
+            </div>
+            <span className="font-bold text-white">{building.level}/10</span>
+          </div>
+          <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2 overflow-hidden">
+            <motion.div
+              className="h-full bg-white rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${(building.level / 10) * 100}%` }}
+              transition={{ delay: 0.4 + index * 0.05, duration: 0.8, ease: 'easeOut' }}
+            />
+          </div>
+        </div>
+
+        {/* Footer Info */}
+        <div className="pt-3 border-t border-white/10 space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-text-muted">
+              <MapPin className="w-4 h-4" />
+              <span className="font-space-grotesk">Location</span>
+            </div>
+            <span className="font-mono font-bold text-white">({building.x}, {building.y})</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-text-muted">
+              <User className="w-4 h-4" />
+              <span className="font-space-grotesk">Owner</span>
+            </div>
+            <span className="font-mono text-white truncate ml-2 max-w-[120px]">{building.owner}</span>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 pt-2">
+          <motion.button
+            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-sm font-bold border-2 border-white/50 hover:border-white transition-all"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle upgrade action
+            }}
+          >
+            Upgrade
+          </motion.button>
+          <motion.button
+            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-sm font-bold border-2 border-white/50 hover:border-white transition-all flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Handle claim action
+            }}
+          >
+            <Award className="w-4 h-4" />
+            Claim
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Selected Indicator */}
+      {isSelected && (
+        <motion.div
+          className="absolute top-2 right-2 w-3 h-3 rounded-full"
+          style={{ backgroundColor: buildingType.color }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        />
+      )}
     </motion.div>
   );
 }
