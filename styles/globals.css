@@ -4,42 +4,51 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-white/10;
   }
   body {
     @apply bg-dark-bg text-white;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: "Space Grotesk", sans-serif;
   }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Orbitron", sans-serif;
   }
 }
 
 @layer utilities {
   .font-orbitron {
-    font-family: 'Orbitron', sans-serif;
+    font-family: "Orbitron", sans-serif;
   }
   .font-space-grotesk {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: "Space Grotesk", sans-serif;
   }
-  
+
   .glass-effect {
     @apply bg-white/5 backdrop-blur-lg border border-white/10;
   }
-  
+
   .card-gradient {
-    background: linear-gradient(135deg, rgba(21, 25, 50, 0.9) 0%, rgba(10, 14, 39, 0.9) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(21, 25, 50, 0.9) 0%,
+      rgba(10, 14, 39, 0.9) 100%
+    );
   }
-  
+
   .text-gradient {
     @apply bg-gradient-cyber bg-clip-text text-transparent;
   }
-  
+
   .btn-primary {
     @apply bg-gradient-cyber text-white font-orbitron font-bold py-3 px-6 rounded-lg 
            hover:shadow-lg hover:shadow-cyber-blue/50 transition-all transform hover:scale-105;
   }
-  
+
   .btn-secondary {
     @apply bg-dark-card border-2 border-cyber-blue/50 text-cyber-blue font-orbitron font-bold 
            py-3 px-6 rounded-lg hover:bg-cyber-blue/10 transition-all;
@@ -67,7 +76,8 @@
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
