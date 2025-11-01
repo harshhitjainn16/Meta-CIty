@@ -96,12 +96,12 @@ export default function BuildingsGallery() {
       </div>
 
       {/* Filters and Sort */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
         {/* Filter Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-2 flex-1">
+        <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 min-w-0">
           <motion.button 
             onClick={() => setFilterType(null)}
-            className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
+            className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all flex-shrink-0 ${
               filterType === null 
                 ? 'bg-white text-black border-white font-bold' 
                 : 'bg-black text-white border-white/50 hover:border-white'
@@ -119,7 +119,7 @@ export default function BuildingsGallery() {
             <motion.button
               key={type.id}
               onClick={() => setFilterType(type.id)}
-              className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all ${
+              className={`px-4 py-2 rounded-lg font-space-grotesk whitespace-nowrap border-2 transition-all flex-shrink-0 ${
                 filterType === type.id
                   ? 'bg-white text-black border-white font-bold'
                   : 'bg-black text-white border-white/50 hover:border-white'
@@ -137,12 +137,12 @@ export default function BuildingsGallery() {
         </div>
 
         {/* Sort Dropdown */}
-        <div className="flex items-center gap-2">
-          <span className="text-text-muted text-sm">Sort by:</span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-text-muted text-sm whitespace-nowrap">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'level' | 'rewards' | 'sustainability')}
-            className="bg-black border-2 border-white/50 text-white px-4 py-2 rounded-lg font-space-grotesk focus:border-white focus:outline-none"
+            className="bg-black border-2 border-white/50 text-white px-4 py-2 rounded-lg font-space-grotesk focus:border-white focus:outline-none min-w-[140px]"
           >
             <option value="level">Level</option>
             <option value="rewards">Rewards</option>
@@ -222,10 +222,10 @@ function BuildingCard({
       {/* Card Content */}
       <div className="relative p-6 space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <div
-              className="text-5xl p-4 rounded-xl flex-shrink-0"
+              className="text-4xl sm:text-5xl p-3 sm:p-4 rounded-xl flex-shrink-0"
               style={{
                 background: `linear-gradient(135deg, ${buildingType.color}30 0%, ${buildingType.color}10 100%)`,
                 boxShadow: `0 8px 32px ${buildingType.color}30`,
@@ -235,7 +235,7 @@ function BuildingCard({
             </div>
             <div className="min-w-0 flex-1">
               <h3
-                className="font-orbitron font-bold text-lg truncate"
+                className="font-orbitron font-bold text-base sm:text-lg truncate"
                 style={{ color: buildingType.color }}
               >
                 {buildingType.name}
@@ -245,26 +245,26 @@ function BuildingCard({
           </div>
           {/* Level Badge */}
           <div
-            className="flex items-center justify-center w-12 h-12 rounded-full border-2 font-orbitron font-bold text-white flex-shrink-0"
+            className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 font-orbitron font-bold text-white flex-shrink-0"
             style={{
               borderColor: buildingType.color,
               backgroundColor: `${buildingType.color}20`,
             }}
           >
-            <span className="text-xl">{building.level}</span>
+            <span className="text-lg sm:text-xl">{building.level}</span>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {/* Sustainability */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Leaf className="w-4 h-4 text-accent-green" />
-              <span className="text-xs text-text-muted font-space-grotesk">Sustainability</span>
+              <Leaf className="w-4 h-4 text-accent-green flex-shrink-0" />
+              <span className="text-xs text-text-muted font-space-grotesk truncate">Sustainability</span>
             </div>
-            <div className="relative">
-              <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2 overflow-hidden">
+            <div className="relative pt-1">
+              <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2.5 overflow-hidden">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ backgroundColor: buildingType.color }}
@@ -273,7 +273,7 @@ function BuildingCard({
                   transition={{ delay: 0.3 + index * 0.05, duration: 0.8, ease: 'easeOut' }}
                 />
               </div>
-              <span className="text-xs font-bold text-white absolute right-0 top-0">
+              <span className="text-xs font-bold text-white absolute -top-0.5 right-0">
                 {building.sustainability}%
               </span>
             </div>
@@ -282,26 +282,28 @@ function BuildingCard({
           {/* Rewards */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Coins className="w-4 h-4 text-accent-purple" />
-              <span className="text-xs text-text-muted font-space-grotesk">Rewards</span>
+              <Coins className="w-4 h-4 text-accent-purple flex-shrink-0" />
+              <span className="text-xs text-text-muted font-space-grotesk truncate">Rewards</span>
             </div>
-            <p className="text-sm font-orbitron font-bold text-white">
-              {building.rewards.toLocaleString()}
-            </p>
-            <p className="text-xs text-text-muted">METACITY</p>
+            <div>
+              <p className="text-sm font-orbitron font-bold text-white">
+                {building.rewards.toLocaleString()}
+              </p>
+              <p className="text-xs text-text-muted">METACITY</p>
+            </div>
           </div>
         </div>
 
         {/* Level Progress */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-accent-cyan" />
-              <span className="text-text-muted font-space-grotesk">Level Progress</span>
+          <div className="flex items-center justify-between text-xs gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Zap className="w-4 h-4 text-accent-cyan flex-shrink-0" />
+              <span className="text-text-muted font-space-grotesk truncate">Level Progress</span>
             </div>
-            <span className="font-bold text-white">{building.level}/10</span>
+            <span className="font-bold text-white whitespace-nowrap flex-shrink-0">{building.level}/10</span>
           </div>
-          <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-dark-gray/50 border border-white/10 rounded-full h-2.5 overflow-hidden">
             <motion.div
               className="h-full bg-white rounded-full"
               initial={{ width: 0 }}
@@ -312,27 +314,27 @@ function BuildingCard({
         </div>
 
         {/* Footer Info */}
-        <div className="pt-3 border-t border-white/10 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-text-muted">
-              <MapPin className="w-4 h-4" />
-              <span className="font-space-grotesk">Location</span>
+        <div className="pt-3 border-t border-white/10 space-y-2.5">
+          <div className="flex items-center justify-between text-xs gap-2">
+            <div className="flex items-center gap-2 text-text-muted min-w-0">
+              <MapPin className="w-4 h-4 flex-shrink-0" />
+              <span className="font-space-grotesk truncate">Location</span>
             </div>
-            <span className="font-mono font-bold text-white">({building.x}, {building.y})</span>
+            <span className="font-mono font-bold text-white whitespace-nowrap flex-shrink-0">({building.x}, {building.y})</span>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-text-muted">
-              <User className="w-4 h-4" />
-              <span className="font-space-grotesk">Owner</span>
+          <div className="flex items-center justify-between text-xs gap-2">
+            <div className="flex items-center gap-2 text-text-muted min-w-0">
+              <User className="w-4 h-4 flex-shrink-0" />
+              <span className="font-space-grotesk truncate">Owner</span>
             </div>
-            <span className="font-mono text-white truncate ml-2 max-w-[120px]">{building.owner}</span>
+            <span className="font-mono text-white truncate ml-2 max-w-[140px] sm:max-w-[160px] text-right" title={building.owner}>{building.owner}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
           <motion.button
-            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-sm font-bold border-2 border-white/50 hover:border-white transition-all"
+            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-xs sm:text-sm font-bold border-2 border-white/50 hover:border-white transition-all min-w-0"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={(e) => {
@@ -343,7 +345,7 @@ function BuildingCard({
             Upgrade
           </motion.button>
           <motion.button
-            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-sm font-bold border-2 border-white/50 hover:border-white transition-all flex items-center justify-center gap-2"
+            className="flex-1 bg-black text-white py-2.5 rounded-lg font-orbitron text-xs sm:text-sm font-bold border-2 border-white/50 hover:border-white transition-all flex items-center justify-center gap-2 min-w-0"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={(e) => {
@@ -351,8 +353,8 @@ function BuildingCard({
               // Handle claim action
             }}
           >
-            <Award className="w-4 h-4" />
-            Claim
+            <Award className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate">Claim</span>
           </motion.button>
         </div>
       </div>
