@@ -4,9 +4,6 @@ import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { config } from "@/lib/wagmi";
-import { NotificationProvider } from "@/contexts/NotificationContext";
-import { StreamingProvider } from "@/contexts/StreamingContext";
-import ToastContainer from "@/components/ui/ToastContainer";
 import "@rainbow-me/rainbowkit/styles.css";
 
 const queryClient = new QueryClient();
@@ -23,12 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
             overlayBlur: "small",
           })}
         >
-          <NotificationProvider>
-            <StreamingProvider>
-              <Component {...pageProps} />
-              <ToastContainer />
-            </StreamingProvider>
-          </NotificationProvider>
+          <Component {...pageProps} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

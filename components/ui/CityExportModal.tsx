@@ -17,7 +17,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { SOCIAL_PRESETS, ScreenshotOptions } from "@/utils/screenshot";
-import { useNotifications } from "@/contexts/NotificationContext";
 
 interface ScreenshotFunctions {
   captureCity: (options?: ScreenshotOptions) => Promise<string>;
@@ -73,7 +72,6 @@ export const CityExportModal: React.FC<ExportModalProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { captureCity, downloadCity, shareCity } = screenshotFunctions;
-  const { showToast, playSound, showBrowserNotification } = useNotifications();
 
   const handleExport = async (action: "download" | "share" | "preview") => {
     setIsExporting(true);
@@ -96,44 +94,18 @@ export const CityExportModal: React.FC<ExportModalProps> = ({
       if (action === "preview") {
         const dataUrl = await captureCity(options);
         setPreviewUrl(dataUrl);
-        playSound("success");
-        showToast({
-          type: "success",
-          title: "📷 Preview Generated",
-          message: "City screenshot preview is ready!",
-          duration: 3000,
-        });
+        console.log("Preview generated");
       } else if (action === "download") {
         const filename = `metacity-${
           preset ? preset.platform.toLowerCase() : "custom"
         }-${Date.now()}.${format}`;
         await downloadCity({ ...options, filename });
-
-        playSound("success");
-        showToast({
-          type: "success",
-          title: "💾 Image Downloaded",
-          message: `Your MetaCity screenshot has been saved as ${filename}`,
-          action: {
-            label: "Open Folder",
-            onClick: () => console.log("Open downloads folder"),
-          },
-        });
-        showBrowserNotification("MetaCity Screenshot Ready", {
-          body: `Your city screenshot has been downloaded successfully!`,
-          icon: "/favicon.ico",
-        });
+        console.log(`Image downloaded: ${filename}`);
       } else if (action === "share") {
         const { dataUrl, shared } = await shareCity(options);
 
         if (shared) {
-          playSound("success");
-          showToast({
-            type: "success",
-            title: "📋 Copied to Clipboard",
-            message: "Image copied! Ready to share on social media.",
-            duration: 4000,
-          });
+          console.log("Image copied to clipboard");
         } else {
           // Fallback to download
           const link = document.createElement("a");
@@ -141,23 +113,11 @@ export const CityExportModal: React.FC<ExportModalProps> = ({
           link.href = dataUrl;
           link.click();
 
-          showToast({
-            type: "info",
-            title: "💾 Download Started",
-            message: "Clipboard not supported. Image downloaded instead.",
-            duration: 4000,
-          });
+          console.log("Download started as fallback");
         }
       }
     } catch (error) {
       console.error("Export failed:", error);
-      playSound("error");
-      showToast({
-        type: "error",
-        title: "❌ Export Failed",
-        message: "Failed to export city screenshot. Please try again.",
-        duration: 5000,
-      });
     } finally {
       setIsExporting(false);
     }

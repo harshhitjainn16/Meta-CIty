@@ -8,13 +8,6 @@ import StakingPanel from "@/components/StakingPanel";
 import BuildingsGallery from "@/components/BuildingsGallery";
 import { motion } from "framer-motion";
 
-const StreamerDashboard = dynamic(
-  () => import("@/components/StreamerDashboard"),
-  {
-    ssr: false,
-  }
-);
-
 const CityScene = dynamic(() => import("@/components/CityScene"), {
   ssr: false,
   loading: () => (
@@ -27,13 +20,7 @@ const CityScene = dynamic(() => import("@/components/CityScene"), {
   ),
 });
 
-type Tab =
-  | "city"
-  | "proposals"
-  | "staking"
-  | "buildings"
-  | "dashboard"
-  | "streaming";
+type Tab = "city" | "proposals" | "staking" | "buildings" | "dashboard";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("city");
@@ -63,7 +50,6 @@ export default function Home() {
                 { id: "proposals", label: "Proposals", icon: "🗳️" },
                 { id: "staking", label: "Staking", icon: "💰" },
                 { id: "buildings", label: "Buildings", icon: "🏗️" },
-                { id: "streaming", label: "Live Stream", icon: "📹" },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -104,7 +90,6 @@ export default function Home() {
             {activeTab === "proposals" && <ProposalsList />}
             {activeTab === "staking" && <StakingPanel />}
             {activeTab === "buildings" && <BuildingsGallery />}
-            {activeTab === "streaming" && <StreamerDashboard />}
           </motion.div>
         </main>
 

@@ -1,66 +1,27 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Coins, TrendingUp, Wallet, Award } from "lucide-react";
-import { useNotifications } from "@/contexts/NotificationContext";
-import { playCyberSound } from "@/utils/soundEffects";
 
 export default function StakingPanel() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
-  const { showToast, playSound, showBrowserNotification } = useNotifications();
 
   const handleStake = () => {
     if (!stakeAmount) return;
 
-    playSound("success");
-    playCyberSound("data_transfer");
-    showToast({
-      type: "success",
-      title: "🔒 Tokens Staked!",
-      message: `Successfully staked ${stakeAmount} METACITY tokens. Your rewards will start accumulating immediately.`,
-      action: {
-        label: "View Pool",
-        onClick: () => console.log("View staking pool"),
-      },
-    });
-    showBrowserNotification("MetaCity Staking", {
-      body: `${stakeAmount} METACITY tokens staked successfully!`,
-      icon: "/favicon.ico",
-    });
+    console.log(`Staked ${stakeAmount} METACITY tokens`);
     setStakeAmount("");
   };
 
   const handleUnstake = () => {
     if (!unstakeAmount) return;
 
-    playSound("notification");
-    playCyberSound("terminal_beep");
-    showToast({
-      type: "info",
-      title: "🔓 Unstaking Initiated",
-      message: `${unstakeAmount} METACITY tokens will be available after the 7-day cooling period.`,
-      duration: 6000,
-    });
+    console.log(`Unstaking ${unstakeAmount} METACITY tokens`);
     setUnstakeAmount("");
   };
 
   const handleClaimRewards = () => {
-    playSound("claim");
-    playCyberSound("system_boot");
-    showToast({
-      type: "success",
-      title: "💰 Rewards Claimed!",
-      message:
-        "Successfully claimed 150 METACITY tokens from your staked position.",
-      action: {
-        label: "View Transaction",
-        onClick: () => console.log("View on block explorer"),
-      },
-    });
-    showBrowserNotification("MetaCity Rewards", {
-      body: "150 METACITY tokens claimed successfully!",
-      icon: "/favicon.ico",
-    });
+    console.log("Claimed 150 METACITY tokens from staking rewards");
   };
 
   return (

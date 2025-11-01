@@ -1,7 +1,5 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import CityExportModal from "@/components/ui/CityExportModal";
-import StreamOverlay from "@/components/StreamOverlay";
-import { useStreaming } from "@/contexts/StreamingContext";
 import { createScreenshotFunctions } from "@/utils/screenshot";
 import { useThree } from "@react-three/fiber";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -454,15 +452,11 @@ export default function CityScene() {
   } | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [showStreamOverlay, setShowStreamOverlay] = useState(false);
   const [screenshotFunctions, setScreenshotFunctions] = useState<ReturnType<
     typeof createScreenshotFunctions
   > | null>(null);
   const controlsRef = useRef<any>(null);
   const cameraRef = useRef<any>(null);
-
-  // Get streaming context
-  const { isStreaming, isAuthenticated } = useStreaming();
 
   // Mock city stats - in a real app, these would come from your smart contracts
   const cityStats = {
@@ -917,11 +911,6 @@ export default function CityScene() {
           cityStats={cityStats}
           screenshotFunctions={screenshotFunctions}
         />
-      )}
-
-      {/* Stream Overlay */}
-      {isAuthenticated && isStreaming && (
-        <StreamOverlay position="top-right" compact={!showStreamOverlay} />
       )}
     </div>
   );
