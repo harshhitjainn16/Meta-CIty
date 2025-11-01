@@ -12,7 +12,18 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, Users, Building, Award } from "lucide-react";
+import {
+  TrendingUp,
+  Users,
+  Building,
+  Award,
+  Bell,
+  Volume2,
+  Zap,
+  CheckCircle,
+} from "lucide-react";
+import { useNotifications } from "@/contexts/NotificationContext";
+import { playCyberSound } from "@/utils/soundEffects";
 
 const statsData = [
   { name: "Mon", buildings: 12, proposals: 5, value: 2400 },
@@ -35,8 +46,186 @@ const buildingDistribution = [
 const COLORS = ["#00d4ff", "#b537ff", "#ff006e", "#39ff14", "#ff6b35"];
 
 export default function Dashboard() {
+  const {
+    showToast,
+    playSound,
+    showBrowserNotification,
+    requestNotificationPermission,
+  } = useNotifications();
+
+  const handleProposalPass = () => {
+    playSound("success");
+    playCyberSound("access_granted");
+    showToast({
+      type: "success",
+      title: "🎉 Proposal Passed!",
+      message:
+        "Solar Farm Initiative #42 has been approved by the community with 89% support.",
+      action: {
+        label: "View Details",
+        onClick: () => console.log("View proposal details"),
+      },
+    });
+    showBrowserNotification("MetaCity DAO - Proposal Passed", {
+      body: "Solar Farm Initiative #42 has been approved!",
+      icon: "/favicon.ico",
+    });
+  };
+
+  const handleProposalFail = () => {
+    playSound("error");
+    playCyberSound("access_denied");
+    showToast({
+      type: "error",
+      title: "❌ Proposal Failed",
+      message:
+        "Commercial Zone Expansion #23 did not reach the required 60% approval threshold.",
+      duration: 7000,
+    });
+    showBrowserNotification("MetaCity DAO - Proposal Failed", {
+      body: "Commercial Zone Expansion #23 was rejected",
+      icon: "/favicon.ico",
+    });
+  };
+
+  const handleBuildingMint = () => {
+    playSound("mint");
+    playCyberSound("data_transfer");
+    showToast({
+      type: "success",
+      title: "🏗️ Building Minted!",
+      message:
+        "Your Eco-Tower NFT has been successfully minted to your wallet. Level 5 sustainability achieved!",
+      action: {
+        label: "View NFT",
+        onClick: () => console.log("View NFT on OpenSea"),
+      },
+    });
+    showBrowserNotification("MetaCity - New Building Minted", {
+      body: "Your Eco-Tower NFT is ready!",
+      icon: "/favicon.ico",
+    });
+  };
+
+  const handleRewardClaim = () => {
+    playSound("claim");
+    playCyberSound("system_boot");
+    showToast({
+      type: "info",
+      title: "💰 Rewards Claimed!",
+      message:
+        "Successfully claimed 1,250 METACITY tokens from your staked buildings.",
+      duration: 6000,
+    });
+  };
+
+  const handleVoteCast = () => {
+    playSound("vote");
+    playCyberSound("terminal_beep");
+    showToast({
+      type: "info",
+      title: "🗳️ Vote Recorded",
+      message:
+        "Your vote on Proposal #44 has been successfully recorded on-chain.",
+      duration: 4000,
+    });
+  };
+
+  const handleSystemAlert = () => {
+    showToast({
+      type: "warning",
+      title: "⚠️ Network Congestion",
+      message:
+        "Monad testnet is experiencing high traffic. Transactions may take longer than usual.",
+      persistent: true,
+      action: {
+        label: "Check Status",
+        onClick: () => window.open("https://testnet-rpc.monad.xyz", "_blank"),
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Notification Demo Panel */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card-gradient p-6 rounded-xl border border-white/10"
+      >
+        <h3 className="font-orbitron text-xl mb-4 text-white flex items-center gap-2">
+          <Bell className="w-5 h-5 text-cyan-400" />
+          🔔 Real-Time Notifications Demo
+        </h3>
+        <p className="text-gray-400 text-sm mb-4">
+          Test the notification system with different types of MetaCity events:
+        </p>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-400/50 rounded-lg text-green-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleProposalPass}
+          >
+            <CheckCircle className="w-4 h-4" />
+            Proposal Pass
+          </motion.button>
+
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 rounded-lg text-red-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleProposalFail}
+          >
+            ❌ Proposal Fail
+          </motion.button>
+
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 rounded-lg text-purple-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleBuildingMint}
+          >
+            🏗️ Building Mint
+          </motion.button>
+
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 rounded-lg text-cyan-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleRewardClaim}
+          >
+            💰 Claim Rewards
+          </motion.button>
+
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/50 rounded-lg text-blue-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleVoteCast}
+          >
+            🗳️ Cast Vote
+          </motion.button>
+
+          <motion.button
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-400/50 rounded-lg text-yellow-400 text-sm font-space-grotesk transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSystemAlert}
+          >
+            ⚠️ System Alert
+          </motion.button>
+        </div>
+
+        <div className="mt-4 p-3 bg-black/50 rounded-lg border border-cyan-400/30">
+          <p className="text-xs text-gray-400">
+            <Volume2 className="w-3 h-3 inline mr-1" />
+            Features: Toast notifications, sound effects, browser notifications
+            (requires permission)
+          </p>
+        </div>
+      </motion.div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard

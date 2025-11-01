@@ -1,4 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
+import CityExportModal from "@/components/ui/CityExportModal";
+import StreamOverlay from "@/components/StreamOverlay";
+import { useStreaming } from "@/contexts/StreamingContext";
+import { createScreenshotFunctions } from "@/utils/screenshot";
+import { useThree } from "@react-three/fiber";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -420,6 +425,27 @@ function AnimatedSky() {
   );
 }
 
+// Component to get renderer from inside Canvas and pass screenshot functions up
+function ScreenshotProvider({
+  onScreenshotFunctions,
+}: {
+  onScreenshotFunctions: (
+    functions: ReturnType<typeof createScreenshotFunctions>
+  ) => void;
+}) {
+  const { gl: renderer } = useThree();
+
+  const screenshotFunctions = useMemo(() => {
+    return createScreenshotFunctions(renderer);
+  }, [renderer]);
+
+  useEffect(() => {
+    onScreenshotFunctions(screenshotFunctions);
+  }, [screenshotFunctions, onScreenshotFunctions]);
+
+  return null;
+}
+
 export default function CityScene() {
   const [hoveredBuilding, setHoveredBuilding] = useState<{
     name: string;
@@ -427,8 +453,24 @@ export default function CityScene() {
     type: number;
   } | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [showStreamOverlay, setShowStreamOverlay] = useState(false);
+  const [screenshotFunctions, setScreenshotFunctions] = useState<ReturnType<
+    typeof createScreenshotFunctions
+  > | null>(null);
   const controlsRef = useRef<any>(null);
   const cameraRef = useRef<any>(null);
+
+  // Get streaming context
+  const { isStreaming, isAuthenticated } = useStreaming();
+
+  // Mock city stats - in a real app, these would come from your smart contracts
+  const cityStats = {
+    buildings: 8,
+    sustainability: 78,
+    level: 5,
+    rewards: 12500,
+  };
 
   // Default camera position
   const defaultPosition = { x: 18, y: 12, z: 18 };
@@ -669,6 +711,8 @@ export default function CityScene() {
 
         <fog attach="fog" args={["#000000", 30, 80]} />
         <Environment preset="night" />
+
+        <ScreenshotProvider onScreenshotFunctions={setScreenshotFunctions} />
       </Canvas>
 
       {/* Enhanced UI Overlay */}
@@ -768,6 +812,17 @@ export default function CityScene() {
               🎲
             </div>
           </button>
+
+          {/* Export Screenshot Button */}
+          <button
+            className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/40 hover:to-pink-500/40 border border-purple-400/30 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-105 group"
+            title="Export City Screenshot"
+            onClick={() => setIsExportModalOpen(true)}
+          >
+            <div className="text-purple-400 group-hover:text-white transition-colors">
+              📸
+            </div>
+          </button>
         </div>
       </div>
 
@@ -852,6 +907,21 @@ export default function CityScene() {
             {hoveredBuilding.position[2].toFixed(1)}]
           </div>
         </div>
+      )}
+
+      {/* Export Modal */}
+      {screenshotFunctions && (
+        <CityExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          cityStats={cityStats}
+          screenshotFunctions={screenshotFunctions}
+        />
+      )}
+
+      {/* Stream Overlay */}
+      {isAuthenticated && isStreaming && (
+        <StreamOverlay position="top-right" compact={!showStreamOverlay} />
       )}
     </div>
   );
